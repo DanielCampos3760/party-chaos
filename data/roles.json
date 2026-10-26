@@ -1,0 +1,27 @@
+[
+  {
+    "role": "Bruja",
+    "team": "Evil",
+    "description": "Elige a un jugador cada noche para eliminarlo o maldecirlo en secreto."
+  },
+  {
+    "role": "Cazador",
+    "team": "Good",
+    "description": "Investiga el rol secreto de un jugador por noche o dispara si está seguro."
+  },
+  {
+    "role": "Guardián",
+    "team": "Good",
+    "description": "Protege a un jugador por noche para evitar que sea atacado por las Brujas."
+  },
+  {
+    "role": "Juez",
+    "team": "Good",
+    "description": "Tu voto vale el doble durante la fase de discusión diurna."
+  },
+  {
+    "role": "Aldeano",
+    "team": "Good",
+    "description": "Usa la lógica en el debate para encontrar y linchar a las Brujas."
+  }
+]

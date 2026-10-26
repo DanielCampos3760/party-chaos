@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  party-chaos:
+    build: .
+    container_name: party-chaos
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000

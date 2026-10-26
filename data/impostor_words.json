@@ -1,0 +1,7 @@
+[
+  { "pair": ["Tequila", "Mezcal"], "category": "Fiesta" },
+  { "pair": ["Gimnasio", "Spa"], "category": "Lugares" },
+  { "pair": ["Pizza", "Hamburguesa"], "category": "Comida" },
+  { "pair": ["Minecraft", "Roblox"], "category": "Videojuegos" },
+  { "pair": ["Cerveza", "Vodka"], "category": "Fiesta" }
+]
