@@ -54,6 +54,58 @@ io.on('connection', (socket) => {
     socket.emit('roomCreated', { roomCode: code, room: rooms[code] });
   });
 
+  // Voto para reiniciar partida
+  socket.on('requestReplay', () => {
+    const roomId = socket.roomId; // Asumiendo que guardas el roomId en el socket
+    const room = rooms[roomId];
+
+    if (!room) return;
+
+    if (!room.replayVotes) {
+      room.replayVotes = new Set();
+    }
+
+    room.replayVotes.add(socket.id);
+
+    // Notificar avance de votos a la sala
+    io.to(roomId).emit('replayVoteUpdate', {
+      votes: room.replayVotes.size,
+      totalPlayers: room.players.length
+    });
+
+    // Si todos los jugadores votaron reiniciar
+    if (room.replayVotes.size >= room.players.length) {
+      room.replayVotes.clear();
+      
+      // Reiniciar estado interno del juego
+      room.gameState = resetGameState(room.players);
+
+      // Emitir orden de reinicio a todos los clientes de la sala
+      io.to(roomId).emit('restartGame', room.gameState);
+    }
+  });
+
+  // Salir de la sala
+  socket.on('leaveRoom', () => {
+    const roomId = socket.roomId;
+    const room = rooms[roomId];
+
+    if (room) {
+      // Remover jugador de la lista
+      room.players = room.players.filter(p => p.id !== socket.id);
+      socket.leave(roomId);
+      socket.roomId = null;
+
+      // Limpiar sala si queda vacía
+      if (room.players.length === 0) {
+        delete rooms[roomId];
+      } else {
+        // Notificar a los jugadores restantes la salida
+        io.to(roomId).emit('playerLeft', { playerId: socket.id });
+      }
+    }
+  });
+
   socket.on('joinRoom', ({ roomCode, playerName, avatar }) => {
     const code = roomCode.toUpperCase();
     const room = rooms[code];

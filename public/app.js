@@ -2,6 +2,12 @@ const socket = io();
 let currentRoom = null;
 let timerInterval = null;
 
+const endgameModal = document.getElementById('endgame-modal');
+const winnerText = document.getElementById('winner-text');
+const btnReplay = document.getElementById('btn-replay');
+const btnExit = document.getElementById('btn-exit');
+const replayStatus = document.getElementById('replay-status');
+
 function createRoom() {
   const name = document.getElementById('player-name').value.trim();
   const avatar = document.getElementById('player-avatar').value;
@@ -83,3 +89,38 @@ function startCountdown(seconds) {
     }
   }, 1000);
 }
+
+// 1. Recibir evento de fin de juego desde el servidor
+socket.on('gameOver', (data) => {
+  winnerText.innerText = `El ganador es: ${data.winnerName}`;
+  replayStatus.innerText = '';
+  btnReplay.disabled = false;
+  endgameModal.classList.remove('hidden');
+});
+
+// 2. Evento Botón: Jugar otra vez
+btnReplay.addEventListener('click', () => {
+  btnReplay.disabled = true;
+  replayStatus.innerText = 'Esperando a que los demás jugadores acepten...';
+  socket.emit('requestReplay');
+});
+
+// 3. Evento Botón: Salir al menú
+btnExit.addEventListener('click', () => {
+  endgameModal.classList.add('hidden');
+  socket.emit('leaveRoom');
+  // Redirigir al menú principal de tu app
+  showScreen('main-menu-screen'); 
+});
+
+// 4. Escuchar reinicio de partida enviado por el servidor
+socket.on('restartGame', (initialGameState) => {
+  endgameModal.classList.add('hidden');
+  // Función existente para renderizar el tablero desde cero
+  initBoard(initialGameState); 
+});
+
+// 5. Notificación de actualización de votos de reinicio
+socket.on('replayVoteUpdate', (data) => {
+  replayStatus.innerText = `Votos para reiniciar: ${data.votes} / ${data.totalPlayers}`;
+});
